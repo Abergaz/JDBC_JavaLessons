@@ -4,7 +4,7 @@ import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 
 
-public class Lesson1 {
+public class Lesson14 {
     private static String userName = "root";
     private static String password = "1111";
     private static String url = "jdbc:mysql://localhost:3306/test";
