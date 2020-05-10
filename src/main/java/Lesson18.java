@@ -6,7 +6,7 @@ import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 
 
-public class Lesson17 {
+public class Lesson18 {
     private static String userName = "root";
     private static String password = "1111";
     private static String url = "jdbc:mysql://localhost:3306/test";
@@ -38,9 +38,22 @@ public class Lesson17 {
             statement.addBatch("INSERT INTO books (name,dt) values ('Spartacus','2020-05-09')");
 
             //запускаем поток на выполнение, возвращает int массив  с резуьтаттами выполения запросов
-            if (statement.executeBatch().length==5){
+            if (statement.executeBatch().length == 5) {
                 connection.commit();//если 5 резуьтатотов то commit
             }
+
+            /**
+             * Сушествуют 4 уровня изоляции транзакция
+             *
+             * connection.setTransactionIsolation();
+             *
+             * Connection.TRANSACTION_NONE;
+             * Connection.TRANSACTION_READ_COMMITTED; ( по умолчаию в МySQl - исключает Dirty Read)
+             * Connection.TRANSACTION_READ_UNCOMMITTED; Грязное чтение Dirty read
+             * Connection.TRANSACTION_REPEATABLE_READ; Когда 2 чтения возвращают разные данные, т.е. между чтениями был update
+             * Connection.TRANSACTION_SERIALIZABLE; как и предыдущий пункт только вместо update происходит insert, фантомное чтение
+             *
+             */
 
 
         } catch (Exception e) {
