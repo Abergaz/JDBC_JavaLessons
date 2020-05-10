@@ -6,7 +6,7 @@ import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
 
 
-public class Lesson16 {
+public class Lesson17 {
     private static String userName = "root";
     private static String password = "1111";
     private static String url = "jdbc:mysql://localhost:3306/test";
@@ -26,25 +26,21 @@ public class Lesson16 {
         ) {
             System.out.println("Connection open");
 
-            //перед началом транзации необходимо установить авто коммит в false
+            /** перед тем как использовать Batch (пакет/серию sql запросов
+             * необходимо установить setAutoCommit=false */
             connection.setAutoCommit(false);
 
-            //Запросы на изменение данных executeUpdate
-            statement.executeUpdate("DROP TABLE iF EXISTS Books");
-            statement.executeUpdate("CREATE TABLE IF NOT  EXISTS Books (id MEDIUMINT NOT NULL AUTO_INCREMENT, name VARCHAR(30) not null, dt DATE, PRIMARY KEY(id))");
-            statement.executeUpdate("INSERT INTO books (name,dt) values ('Salamon Key','2020-05-09')");
-            //создаем точку сохранения
-            Savepoint savepoint = connection.setSavepoint();
-            statement.executeUpdate("INSERT INTO books (name,dt) values ('Inferno','2020-05-09')");
-            statement.executeUpdate("INSERT INTO books (name,dt) values ('Spartacus','2020-05-09')");
+            //Запросы добавляем в Batch для выполнения одним потоком
+            statement.addBatch("DROP TABLE iF EXISTS Books");
+            statement.addBatch("CREATE TABLE IF NOT  EXISTS Books (id MEDIUMINT NOT NULL AUTO_INCREMENT, name VARCHAR(30) not null, dt DATE, PRIMARY KEY(id))");
+            statement.addBatch("INSERT INTO books (name,dt) values ('Salamon Key','2020-05-09')");
+            statement.addBatch("INSERT INTO books (name,dt) values ('Inferno','2020-05-09')");
+            statement.addBatch("INSERT INTO books (name,dt) values ('Spartacus','2020-05-09')");
 
-            //после оканчания закоммитить измегения или откатиить обратно
-            connection.commit();
-            //connection.rollback(); //Операции изменения или создания таблиц не откатываются, только операц ии ихменения данных
-            //connection.rollback(savepoint); //возврат на точку останова, посе надо вызвать commit
-            //connection.releaseSavepoint(savepoint);//удаляем точку востановления.
-
-
+            //запускаем поток на выполнение, возвращает int массив  с резуьтаттами выполения запросов
+            if (statement.executeBatch().length==5){
+                connection.commit();//если 5 резуьтатотов то commit
+            }
 
 
         } catch (Exception e) {
